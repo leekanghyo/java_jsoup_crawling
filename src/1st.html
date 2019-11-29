@@ -1,0 +1,210 @@
+<!-- ITS 솔루션 공용 스트립트 추가 2016.12.27 -->
+<html>
+<head>
+<script type="text/javascript">
+	(function(w, d, l, r, c, s) {
+		w[r] = w[r] || function(a) {
+			(w[r].q = w[r].q || []).push(arguments);
+		};
+		w[r].d = 1 * new Date();
+		var _gt_cookieDay = 30;
+		var _gt_debug = false;
+		var _gt_OnlyAD = true; // 광고키값이 있을때만 유입체크
+		var _f_gt_PageView, _f_gt_Convert, _f_gt_ButtonClick, _lt = 10, _LinkDelayTime = 300;
+		var C = function(a) {
+			C[a].apply(C, [].slice.call(arguments))
+		};
+		C.aCode = "";
+		C.domain = "tr.itiscreation.co.kr";
+		try {
+			C.setAccount = function(a) {
+				var args = [].slice.call(arguments);
+				C.aCode = args[1];
+				if (args.length >= 3)
+					try {
+						_gt_cookieDay = args[2];
+					} catch (e) {
+					}
+				;
+			};
+			C.setCookie = function(n, v) {
+				if (typeof (localStorage) != 'undefined')
+					try {
+						localStorage.setItem(n, v);
+					} catch (e) {
+						if (e == QUOTA_EXCEEDED_ERR) {
+							localStorage.clear();
+							localStorage.setItem(n, v);
+						}
+						;
+					}
+				;
+			};
+			C.getCookie = function(n) {
+				if (typeof (localStorage) != 'undefined') {
+					var v = localStorage.getItem(n);
+					if (v != null)
+						return v;
+				}
+				;
+				return null;
+			};
+			C.getParameter = function(n) {
+				var rv = '', ad = unescape(l.href), p = (ad.slice(ad
+						.indexOf('?') + 1, ad.length)).split('&');
+				for (var i = 0; i < p.length; i++) {
+					var vn = p[i].split('=')[0];
+					if (vn.toUpperCase() == n.toUpperCase()) {
+						rv = p[i].split('=')[1];
+						break;
+					}
+					;
+				}
+				;
+				return rv;
+			};
+			C.imageURL = function(a) {
+				var cid = this.getParameter('_itsid'), args = [].slice
+						.call(arguments), v = {}, guid = this
+						.getCookie("_gt_GUID"), t = this.getTime(), _cid = "";
+				v.aid = this.aCode;
+				v.ctime = _gt_cookieDay;
+				if (guid == null) {
+					guid = this.uuid();
+					this.setCookie("_gt_GUID", guid);
+					this.setCookie("_gt_FirstTime", t);
+				}
+				;
+				if (cid.length > 0 && args[0] == "pageview") {
+					_cid = "&cid=" + cid;
+					this.setCookie('_gt_cid', cid);
+					this.setCookie('_gt_aid', C.aCode);
+					this.setCookie('_gt_ctime', t);
+					this.setCookie("_gt_LastTime", t);
+					args[args.length] = "Landing";
+					this.setCookie('_gt_buttonClick', '');
+				}
+				;
+				v.cid = this.getCookie("_gt_cid");
+				v.guid = guid;
+				v.firstTime = this.getCookie("_gt_FirstTime");
+				v.lastTime = this.getCookie("_gt_LastTime");
+				v.forward = args;
+				v.referer = (d.referrer.length > 100) ? d.referrer.substr(0,
+						100) : d.referrer;
+				v.buttonClick = this.getCookie("_gt_buttonClick");
+				var _href = l.protocol + "//" + C.domain + "/an/sv.php?v="
+						+ encodeURIComponent(JSON.stringify(v)) + _cid + "&t="
+						+ (new Date().getTime());
+				if (_gt_debug)
+					console.log(JSON.stringify(v) + "\n" + _href);
+				else
+					setTimeout(function() {
+						new Image().src = _href;
+					}, _lt);
+			};
+			C.send = C.event = function(a) {
+				var args = [].slice.call(arguments);
+				C.imageURL.apply(C, args);
+			};
+			C.pageview = function(a) {
+				var args = [].slice.call(arguments);
+				var cid = this.getParameter('_itsid');
+				if (_gt_OnlyAD && cid.length == 0)
+					return;
+				C.imageURL.apply(C, args);
+				if (_f_gt_PageView && typeof _f_gt_PageView == "function")
+					_f_gt_PageView();
+				if (args.length >= 2)
+					setTimeout(function() {
+						l.href = args[1];
+					}, _LinkDelayTime);
+			};
+			C.convert = function(a) {
+				var args = [].slice.call(arguments);
+				C.imageURL.apply(C, args);
+				if (_f_gt_Convert && typeof _f_gt_Convert == "function")
+					_f_gt_Convert();
+			};
+			C.buttonClick = function(a) {
+				var args = [].slice.call(arguments);
+				this.setCookie('_gt_buttonClick', args[1]);
+				C.imageURL.apply(C, args);
+				if (_f_gt_ButtonClick && typeof _f_gt_ButtonClick == "function")
+					_f_gt_ButtonClick();
+				if (args.length >= 3)
+					setTimeout(function() {
+						l.href = args[2];
+					}, _LinkDelayTime);
+			};
+			C.C = function() {
+				var b = w[r] = C;
+			};
+			C.uuid = function() {
+				var chars = '0123456789abcdef'.split('');
+				var uuid = [], rnd = Math.random, r;
+				uuid[8] = uuid[13] = uuid[18] = uuid[23] = '-';
+				uuid[14] = '4';
+				for (var i = 0; i < 36; i++) {
+					if (!uuid[i]) {
+						r = 0 | rnd() * 16;
+						uuid[i] = chars[(i == 19) ? (r & 0x3) | 0x8 : r & 0xf];
+					}
+				}
+				;
+				return uuid.join('');
+			};
+			C.ip2long = function(ip) {
+				var d = ip.split('.');
+				return d[0] * Math.pow(256, 3) + d[1] * Math.pow(256, 2) + d[2]
+						* 256 + d[3];
+			};
+			C.getTime = function() {
+				return Math.floor(new Date().getTime() / 1000);
+			};
+			(function() {
+				var pv = w[r].q;
+				w[r] = C;
+				var a = C.C;
+				a();
+				return !0
+			})();
+		} catch (e) {
+			if (_gt_debug)
+				console.log('{"error":"LOAD","extra":{"name":"' + e.name
+						+ '","line":"' + (e.lineNumber || e.line)
+						+ '","script":"'
+						+ (e.fileName || e.sourceURL || e.script)
+						+ '","stack":"' + (e.stackTrace || e.stack)
+						+ '","message":"' + e.message + '"}}');
+			else
+				new Image().src = "//"
+						+ C.domain
+						+ "/an/se.php?c=error&m="
+						+ encodeURIComponent('{"error":"LOAD","accountCode","'
+								+ C.aCode + '","extra":{"name":"' + e.name
+								+ '","line":"' + (e.lineNumber || e.line)
+								+ '","script":"'
+								+ (e.fileName || e.sourceURL || e.script)
+								+ '","stack":"' + (e.stackTrace || e.stack)
+								+ '","message":"' + e.message + '"}}');
+		}
+		;
+	})(window, document, location, 'gTracking');
+	gTracking('setAccount', '9', 30);
+	gTracking('pageview');
+</script>
+<script type="text/javascript" language="javascript">
+	function forwardUrl() {
+		window.location.href = '/goods/viewGoodsDetail.lotte?goods_no=12590900&chl_dtl_no=2540914&chl_no=141370';
+	}
+	function sendInfo() {
+		//포워딩URL로 포워딩(0.2 초 후)
+		setTimeout("forwardUrl()", 200);
+	}
+	sendInfo();
+</script>
+</head>
+<body></body>
+</html>
+done
